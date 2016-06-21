@@ -26,11 +26,13 @@ public class MainActivity extends Activity {
     private ArrayList<Integer> fields;
     private Handler handler;
     private Drawable background;
+    private Random r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        r = new Random();
         handler = new Handler();
         list = new LinkedList<Integer>();
         fields = new ArrayList<Integer>();
@@ -59,7 +61,20 @@ public class MainActivity extends Activity {
         setEnableFields(false);
     }
 
+    public void nextElement() {
+        list.add(r.nextInt(8));
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                showElement(list.getLast());
+                if (list.size() < level) {
+                    nextElement();
+                }
+            }
+        }, NEXT_DELAY);
+    }
+
     public void selectField(View v) {
+        setEnableFields(false);
         int expected = list.removeFirst();
         int result = fields.indexOf(v.getId());
         if (expected == result) {
@@ -67,7 +82,6 @@ public class MainActivity extends Activity {
         } else {
             showIncorrect();
         }
-        setEnableFields(false);
     }
 
     public void showElement(final int i) {
@@ -86,26 +100,6 @@ public class MainActivity extends Activity {
         if (list.size() == level) {
             setEnableFields(true);
         }
-    }
-
-    public void nextElement() {
-        Random r = new Random();
-        final int i = r.nextInt(fields.size() - 1);
-        list.add(i);
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                showElement(i);
-                if (list.size() < level) {
-                    nextElement();
-                }
-            }
-        }, NEXT_DELAY);
-    }
-
-    public void hideCorrect() {
-        TextView result = (TextView) findViewById(R.id.text_result);
-        result.setBackgroundColor(getResources().getColor(android.R.color.white));
-        result.setText("");
     }
 
     public void setEnableFields(boolean enabled) {
@@ -127,8 +121,13 @@ public class MainActivity extends Activity {
         nextElement();
     }
 
+    public void hideCorrect() {
+        TextView result = (TextView) findViewById(R.id.text_result);
+        result.setBackgroundColor(getResources().getColor(android.R.color.white));
+        result.setText("");
+    }
+
     private void showIncorrect() {
-        setEnableFields(false);
         TextView result = (TextView) findViewById(R.id.text_result);
         result.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         result.setText(R.string.incorrect);
@@ -137,8 +136,6 @@ public class MainActivity extends Activity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 setContentView(R.layout.activity_main);
-                list = new LinkedList<Integer>();
-                count = 0;
             }
         }, INCORRECT_DELAY);
     }
