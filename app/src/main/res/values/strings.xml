@@ -5,4 +5,7 @@
     <string name="correct" >Correct</string>
     <string name="incorrect" >Incorrect</string>
 
+    <string name="choose_level">Choose level %1$d</string>
+    <string name="final_count">Count %1$d</string>
+
 </resources>

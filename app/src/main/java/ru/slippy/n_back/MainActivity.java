@@ -15,6 +15,11 @@ import java.util.Random;
 
 public class MainActivity extends Activity {
 
+    final static int SHOW_DELAY = 700;
+    final static int NEXT_DELAY = 1000;
+    final static int CORRECT_DELAY = 500;
+    final static int INCORRECT_DELAY = 3000;
+
     private LinkedList<Integer> list;
     private int level;
     private int count;
@@ -38,16 +43,17 @@ public class MainActivity extends Activity {
         fields.add(R.id.field7);
         fields.add(R.id.field8);
         fields.add(R.id.field9);
-        count = 0;
     }
 
     public void selectLevel(View v) {
         level = Integer.parseInt(String.valueOf(((Button) v).getText()));
 
-        String message = "Choose level " + level;
+        String message = String.format(getResources().getString(R.string.choose_level), level);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
         list.clear();
+        count = 0;
+
         nextElement();
         setContentView(R.layout.game);
         setEnableFields(false);
@@ -72,7 +78,7 @@ public class MainActivity extends Activity {
             public void run() {
                 hideElement(i);
             }
-        }, 700);
+        }, SHOW_DELAY);
     }
 
     public void hideElement(int i) {
@@ -84,7 +90,7 @@ public class MainActivity extends Activity {
 
     public void nextElement() {
         Random r = new Random();
-        final int i = r.nextInt(8) + 1;
+        final int i = r.nextInt(fields.size() - 1);
         list.add(i);
         handler.postDelayed(new Runnable() {
             public void run() {
@@ -93,7 +99,7 @@ public class MainActivity extends Activity {
                     nextElement();
                 }
             }
-        }, 1000);
+        }, NEXT_DELAY);
     }
 
     public void hideCorrect() {
@@ -116,7 +122,7 @@ public class MainActivity extends Activity {
             public void run() {
                 hideCorrect();
             }
-        }, 500);
+        }, CORRECT_DELAY);
         count++;
         nextElement();
     }
@@ -126,13 +132,14 @@ public class MainActivity extends Activity {
         TextView result = (TextView) findViewById(R.id.text_result);
         result.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         result.setText(R.string.incorrect);
-        Toast.makeText(this, "Count " + count, Toast.LENGTH_SHORT).show();
+        String message = String.format(getResources().getString(R.string.final_count), count);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         handler.postDelayed(new Runnable() {
             public void run() {
                 setContentView(R.layout.activity_main);
                 list = new LinkedList<Integer>();
                 count = 0;
             }
-        }, 3000);
+        }, INCORRECT_DELAY);
     }
 }
