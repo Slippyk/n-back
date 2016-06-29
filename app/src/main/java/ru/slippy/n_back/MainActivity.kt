@@ -8,46 +8,40 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-
-import java.util.ArrayList
-import java.util.LinkedList
-import java.util.Random
+import java.util.*
 
 class MainActivity : Activity() {
 
-    private var list: LinkedList<Int>? = null
+    private var list: LinkedList<Int> = LinkedList()
     private var level: Int = 0
     private var count: Int = 0
-    private var fields: ArrayList<Int>? = null
-    private var handler: Handler? = null
+    private var fields: ArrayList<Int> = ArrayList()
+    private var handler: Handler = Handler()
     private var background: Drawable? = null
-    private var r: Random? = null
+    private var r: Random = Random()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        r = Random()
-        handler = Handler()
-        list = LinkedList<Int>()
-        fields = ArrayList<Int>()
-        fields!!.add(R.id.field1)
-        fields!!.add(R.id.field2)
-        fields!!.add(R.id.field3)
-        fields!!.add(R.id.field4)
-        fields!!.add(R.id.field5)
-        fields!!.add(R.id.field6)
-        fields!!.add(R.id.field7)
-        fields!!.add(R.id.field8)
-        fields!!.add(R.id.field9)
+        fields.add(R.id.field1)
+        fields.add(R.id.field2)
+        fields.add(R.id.field3)
+        fields.add(R.id.field4)
+        fields.add(R.id.field5)
+        fields.add(R.id.field6)
+        fields.add(R.id.field7)
+        fields.add(R.id.field8)
+        fields.add(R.id.field9)
     }
 
+    @Suppress("unused")
     fun selectLevel(v: View) {
         level = Integer.parseInt((v as Button).text.toString())
 
         val message = String.format(resources.getString(R.string.choose_level), level)
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
-        list!!.clear()
+        list.clear()
         count = 0
 
         nextElement()
@@ -56,19 +50,20 @@ class MainActivity : Activity() {
     }
 
     fun nextElement() {
-        list!!.add(r!!.nextInt(8))
-        handler!!.postDelayed({
-            showElement(list!!.last)
-            if (list!!.size < level) {
+        list.add(r.nextInt(8))
+        handler.postDelayed({
+            showElement(list.last)
+            if (list.size < level) {
                 nextElement()
             }
         }, NEXT_DELAY.toLong())
     }
 
+    @Suppress("unused")
     fun selectField(v: View) {
         setEnableFields(false)
-        val expected = list!!.removeFirst()
-        val result = fields!!.indexOf(v.id)
+        val expected = list.removeFirst()
+        val result = fields.indexOf(v.id)
         if (expected == result) {
             showCorrect()
         } else {
@@ -77,21 +72,21 @@ class MainActivity : Activity() {
     }
 
     fun showElement(i: Int) {
-        val view = findViewById(fields!![i])
+        val view = findViewById(fields[i])
         background = view.background
         view.setBackgroundColor(resources.getColor(android.R.color.black))
-        handler!!.postDelayed({ hideElement(i) }, SHOW_DELAY.toLong())
+        handler.postDelayed({ hideElement(i) }, SHOW_DELAY.toLong())
     }
 
     fun hideElement(i: Int) {
-        findViewById(fields!![i]).background = background
-        if (list!!.size == level) {
+        findViewById(fields[i]).background = background
+        if (list.size == level) {
             setEnableFields(true)
         }
     }
 
     fun setEnableFields(enabled: Boolean) {
-        for (id in fields!!) {
+        for (id in fields) {
             findViewById(id).isClickable = enabled
         }
     }
@@ -100,7 +95,7 @@ class MainActivity : Activity() {
         val result = findViewById(R.id.text_result) as TextView
         result.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
         result.setText(R.string.correct)
-        handler!!.postDelayed({ hideCorrect() }, CORRECT_DELAY.toLong())
+        handler.postDelayed({ hideCorrect() }, CORRECT_DELAY.toLong())
         count++
         nextElement()
     }
@@ -117,7 +112,7 @@ class MainActivity : Activity() {
         result.setText(R.string.incorrect)
         val message = String.format(resources.getString(R.string.final_count), count)
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        handler!!.postDelayed({ setContentView(R.layout.activity_main) }, INCORRECT_DELAY.toLong())
+        handler.postDelayed({ setContentView(R.layout.activity_main) }, INCORRECT_DELAY.toLong())
     }
 
     companion object {
